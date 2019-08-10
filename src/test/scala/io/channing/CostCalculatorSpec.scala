@@ -6,10 +6,10 @@ class CostCalculatorSpec extends FreeSpec with MustMatchers {
 
   private val apple = 60
   private val orange = 25
+  val costs = Map("Apple" -> apple, "Orange" -> orange)
 
   "Calculate cost from list" in {
     val input = List("Apple", "Apple", "Orange", "Apple")
-    val costs = Map("Apple" -> apple, "Orange" -> orange)
 
     CostCalculator.costs(input, costs) mustEqual Right(3 * apple + orange)
   }
@@ -22,7 +22,6 @@ class CostCalculatorSpec extends FreeSpec with MustMatchers {
   }
 
   "Discounts applied" - {
-    val costs = Map("Apple" -> apple, "Orange" -> orange)
     val discounts: List[Discount] = List(NForMDiscount("Apple", 2, 1), NForMDiscount("Orange", 3, 2))
 
     "no discounts apply" in {
@@ -44,6 +43,16 @@ class CostCalculatorSpec extends FreeSpec with MustMatchers {
       val input = List("Apple", "Apple", "Apple", "Orange", "Orange", "Orange", "Orange")
       CostCalculator.costs(input, costs, discounts) mustEqual Right(2 * apple + 3 * orange)
     }
+
+    "discounts apply multiple times" in {
+      val input = List("Apple", "Apple", "Apple", "Apple", "Apple", "Orange", "Orange", "Orange", "Orange", "Orange", "Orange", "Orange", "Orange")
+      CostCalculator.costs(input, costs, discounts) mustEqual Right(3 * apple + 6 * orange)
+    }
   }
 
+  "biggest discounts applied first" in {
+    val discounts: List[Discount] = List(NForMDiscount("Apple", 4, 1), NForMDiscount("Apple", 3, 2))
+    val input = List.fill(7)("Apple")
+    CostCalculator.costs(input, costs, discounts) mustEqual Right(3 * apple)
+  }
 }
