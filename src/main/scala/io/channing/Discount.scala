@@ -1,7 +1,5 @@
 package io.channing
 
-final case class Saving(discount: Discount, items: List[String], saving: Int)
-
 sealed trait Discount extends Product with Serializable {
   def saving(items: List[String], prices: Map[String, Int]): Option[Saving]
 }
