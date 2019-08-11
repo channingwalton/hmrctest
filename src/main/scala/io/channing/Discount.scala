@@ -5,9 +5,8 @@ sealed trait Discount extends Product with Serializable {
 }
 
 final case class NForMDiscount(item: String, n: Int, m: Int) extends Discount {
-  override def saving(items: List[String], prices: Map[String, Int]): Option[Saving] = {
-    val count = items.count(_ == item)
-    if (count < n)
+  override def saving(items: List[String], prices: Map[String, Int]): Option[Saving] =
+    if (items.count(_ == item) < n)
       None
     else {
       val normalPrice = n * prices(item)
@@ -15,5 +14,4 @@ final case class NForMDiscount(item: String, n: Int, m: Int) extends Discount {
       val saving = normalPrice - discountPrice
       Some(Saving(this, List.fill(n)(item), saving))
     }
-  }
 }
