@@ -6,7 +6,8 @@ class CostCalculatorSpec extends FreeSpec with MustMatchers {
 
   private val apple = 60
   private val orange = 25
-  val costs = Map("Apple" -> apple, "Orange" -> orange)
+  private val banana = 20
+  val costs = Map("Apple" -> apple, "Orange" -> orange, "Banana" -> banana)
 
   "Calculate cost from list" in {
     val input = List("Apple", "Apple", "Orange", "Apple")
@@ -54,5 +55,35 @@ class CostCalculatorSpec extends FreeSpec with MustMatchers {
     val discounts: List[Discount] = List(NForMDiscount("Apple", 4, 1), NForMDiscount("Apple", 3, 2))
     val input = List.fill(7)("Apple")
     CostCalculator.costs(input, costs, discounts) mustEqual Right(3 * apple)
+  }
+
+  "1 banana" in {
+    val discounts: List[Discount] = List(NForMDiscount("Banana", 2, 1))
+    val input = List("Banana")
+    CostCalculator.costs(input, costs, discounts) mustEqual Right(1 * banana)
+  }
+
+  "2 banana" in {
+    val discounts: List[Discount] = List(NForMDiscount("Banana", 2, 1))
+    val input = List("Banana", "Banana")
+    CostCalculator.costs(input, costs, discounts) mustEqual Right(1 * banana)
+  }
+
+  "3 banana" in {
+    val discounts: List[Discount] = List(NForMDiscount("Banana", 2, 1))
+    val input = List("Banana", "Banana", "Banana")
+    CostCalculator.costs(input, costs, discounts) mustEqual Right(2 * banana)
+  }
+
+  "apples and bananas" in {
+    val discounts: List[Discount] = List(NForMDiscount("Banana", 2, 1), NForMDiscount("Apple", 2, 1))
+    val input = List("Apple", "Apple", "Banana", "Banana")
+    CostCalculator.costs(input, costs, discounts) mustEqual Right(apple)
+  }
+
+  "banana and apple combination" in {
+    val discounts: List[Discount] = Nil
+    val input = List("Apple", "Apple", "Banana", "Banana")
+    CostCalculator.costs(input, costs, discounts) mustEqual Right(2 * apple + 2 * banana)
   }
 }
